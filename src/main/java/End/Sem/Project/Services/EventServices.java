@@ -3,7 +3,7 @@ package End.Sem.Project.Services;
 import End.Sem.Project.DTO.CreateEventDTO;
 import End.Sem.Project.Dao.EventInfoDao;
 import End.Sem.Project.Dao.EventsDao;
-import End.Sem.Project.Model.Event_Info;
+import End.Sem.Project.Model.EventInfo;
 import End.Sem.Project.Model.Events;
 import End.Sem.Project.Helpers.*;
 import org.json.JSONObject;
@@ -15,24 +15,45 @@ import java.util.ArrayList;
 import java.util.Optional;
 import java.util.UUID;
 
+/**
+ * Service class responsible for managing events, including adding, modifying,
+ * deleting, and retrieving event information.
+ */
 @Service
 public class EventServices extends CommonHelpers {
 
     private final EventsDao eventsDao;
     private final EventInfoDao eventInfoDao;
 
+    /**
+     * Instantiates all DAO and classes
+     *
+     * @param eventsDao    DAO for event operations.
+     * @param eventInfoDao DAO for event information operations.
+     */
     @Autowired
     public EventServices(EventsDao eventsDao, EventInfoDao eventInfoDao) {
         this.eventsDao = eventsDao;
         this.eventInfoDao = eventInfoDao;
     }
 
+    /**
+     * Trying to return it as a JSON Object to see if React would like a JSON structure or not
+     * Fetches the details of a specific event by its name.
+     *
+     * @param name the name of the event to fetch.
+     * @return a JSONObject containing the event details.
+     */
     public JSONObject getSpecificEvent(String name) {
         JSONObject rJSON = new JSONObject();
-        // Logic to fetch specific event details and populate rJSON
         return rJSON;
     }
 
+    /**
+     * Modifies an existing event based on the provided details.
+     * @param cdto details containing updated event information.
+     * @return true if the modification is successful, else false.
+     */
     public boolean modifyEvent(CreateEventDTO cdto) {
         try {
             if (cdto.getUuid() == null) {
@@ -45,7 +66,6 @@ public class EventServices extends CommonHelpers {
                 throw new Exception("Event not found for UUID: " + cdto.getUuid());
             }
 
-            // Update existing event properties
             Events eventToUpdate = existingEvent.get();
             updateIfNotNullString(cdto.getEventName(), eventToUpdate::setEventName);
             updateIfNotNullString(cdto.getEventLocation(), eventToUpdate::setEventLocation);
@@ -54,33 +74,36 @@ public class EventServices extends CommonHelpers {
             updateIfNotNullDate(cdto.getEventEndDate(), eventToUpdate::setEventEndDate);
             updateIfNotNullTime(cdto.getEventStartTime(), eventToUpdate::setEventStartTime);
             updateIfNotNullTime(cdto.getEventEndTime(), eventToUpdate::setEventEndTime);
-            // Save the updated event
             eventsDao.save(eventToUpdate);
             System.out.println("Modified Event: " + eventToUpdate);
 
-            // Update Event_Info
-            Optional<Event_Info> eventInfoOptional = eventInfoDao.findById(u);
+            Optional<EventInfo> eventInfoOptional = eventInfoDao.findById(u);
             if (!eventInfoOptional.isPresent()) {
                 throw new Exception("Event info not found for UUID: " + cdto.getUuid());
             }
 
-            Event_Info eventMod = eventInfoOptional.get();
+            EventInfo eventMod = eventInfoOptional.get();
             updateIfNotNullUUID(u, eventMod::setEventNum);
             updateIfNotNullInt(cdto.getEventAvailability(), eventMod::setEventAvailability);
             updateIfNotNullString(cdto.getEventDescription(), eventMod::setEventDescription);
             updateIfNotNullString(cdto.getBoardPosition(), eventMod::setBoardPosition);
 
-            // Save the updated Event_Info
             eventInfoDao.save(eventMod);
             System.out.println("Modified EventInfo: " + eventMod);
 
-            return true; // Modification successful
+            return true;
         } catch (Exception e) {
-            e.printStackTrace(); // For debugging, consider logging in production
-            return false; // Return false if there was an error
+            e.printStackTrace();
+            return false;
         }
     }
 
+    /**
+     * Deletes an event based on the provided details
+     *
+     * @param eventDetails contains the event UUID to perform delete.
+     * @return true if the deletion is successful, false if the UUID is null or an error occurs.
+     */
     public boolean deleteEvent(CreateEventDTO eventDetails) {
         try {
             if (eventDetails.getUuid() != null) {
@@ -89,26 +112,27 @@ public class EventServices extends CommonHelpers {
                 eventsDao.deleteById(uuid);
                 return true;
             }
-            return false; // If UUID is null, return false
+            return false;
         } catch (Exception e) {
-            e.printStackTrace(); // For debugging, consider logging in production
-            return false; // Return false if there was an error
+            e.printStackTrace();
+            return false;
         }
     }
 
-    public void populateAndStoreEventInfo(JSONObject eventDetails) {
-        // Implement logic to populate event information
-    }
-
+    /**
+     * Adds a new event based CreateEventDTO from user.
+     *
+     * @param eventDetails containing event information to add.
+     * @return true if the event is added successfully, false if event details are invalid/incorrect.
+     */
     public boolean addEvent(CreateEventDTO eventDetails) {
         if (eventDetails == null || eventDetails.getEventName() == null) {
-            return false; // Ensure valid event details
+            return false;
         }
 
         Events event = new Events();
-        Event_Info eventInfo = new Event_Info();
+        EventInfo eventInfo = new EventInfo();
         try {
-            // Set event properties
             event.setEventName(eventDetails.getEventName());
             event.setEventLocation(eventDetails.getEventLocation());
             event.setEventRegistration(eventDetails.isEventRegistration());
@@ -117,30 +141,32 @@ public class EventServices extends CommonHelpers {
             event.setEventStartTime(eventDetails.getEventStartTime());
             event.setEventEndTime(eventDetails.getEventEndTime());
 
-            // Set event info properties
             eventInfo.setEventAvailability(eventDetails.getEventAvailability());
             eventInfo.setEventDescription(eventDetails.getEventDescription());
             eventInfo.setBoardPosition(eventDetails.getBoardPosition());
-            UUID uuid = UUID.randomUUID(); // Use UUID directly
+            UUID uuid = UUID.randomUUID();
             eventInfo.setEventNum(uuid);
 
-            // Save event and event info
             eventsDao.save(event);
             eventInfoDao.save(eventInfo);
 
-            return true; // Event added successfully
+            return true;
         } catch (Exception e) {
-            e.printStackTrace(); // For debugging, consider logging in production
-            return false; // Return false if there was an error
+            e.printStackTrace();
+            return false;
         }
     }
 
+    /**
+     * Retrieves a list of all events available across communities
+     * @return a List of Events, or an empty list if an error occurs follows the DTO.
+     */
     public List<Events> getAllEvents() {
         try {
-            return eventsDao.findAll(); // Fetch the list of events from the DAO
+            return eventsDao.findAll();
         } catch (Exception e) {
-            e.printStackTrace(); // For debugging
-            return new ArrayList<>(); // Return an empty list in case of error
+            e.printStackTrace();
+            return new ArrayList<>();
         }
     }
 }

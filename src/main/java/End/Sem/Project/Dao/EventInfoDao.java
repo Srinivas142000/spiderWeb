@@ -5,6 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.UUID;
 import End.Sem.Project.Model.*;
 
-public interface EventInfoDao extends JpaRepository <Event_Info, UUID> {
+public interface EventInfoDao extends JpaRepository <EventInfo, UUID> {
 
 }

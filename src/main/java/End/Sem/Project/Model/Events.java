@@ -9,15 +9,20 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.UUID;
 
+/**
+ * Represents an event in the system.
+ * This class holds information about the event including its
+ * unique identifier, name, dates, times, location, and registration status.
+ */
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
 @Entity
-@Table(name = "events")  // Table names are typically in lowercase
+@Table(name = "events")
 public class Events {
     @Id
     private UUID eventNum;
-    private String eventName;  // Assuming this is a unique identifier
+    private String eventName;
     private LocalDate eventStartDate;
     private LocalDate eventEndDate;
     private String eventLocation;
