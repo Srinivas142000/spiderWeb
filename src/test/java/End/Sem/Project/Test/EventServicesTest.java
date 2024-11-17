@@ -10,29 +10,33 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 class EventServicesTest {
-    @Mock
-    private EventsDao eventsDao = Mockito.mock(EventsDao.class);
 
     @Mock
-    private EventInfoDao eventInfoDao = Mockito.mock(EventInfoDao.class);
+    private EventsDao eventsDao;
+
+    @Mock
+    private EventInfoDao eventInfoDao;
 
     @InjectMocks
-    private EventServices eventServices = Mockito.mock(EventServices.class);
+    private EventServices eventServices;
 
-    private CreateEventDTO createEventDTO = Mockito.mock(CreateEventDTO.class);
+    private CreateEventDTO createEventDTO;
     private UUID eventUUID;
     private Events event;
     private EventInfo eventInfo;
 
     @BeforeEach
     void setUp() {
+        MockitoAnnotations.openMocks(this);
+
         eventUUID = UUID.randomUUID();
         createEventDTO = new CreateEventDTO();
         createEventDTO.setUuid(eventUUID.toString());
@@ -54,39 +58,36 @@ class EventServicesTest {
         eventInfo.setBoardPosition("Organizer");
         eventInfo.setEventNum(eventUUID);
     }
-    // This test is not necessary
-//    @Test
-//    void getSpecificEvent() {
-//        assertNotNull(eventServices.getSpecificEvent("Sample Event"));
-//    }
 
     @Test
     void modifyEvent_success() {
-        Mockito.when(eventsDao.findById(eventUUID)).thenReturn(Optional.of(event));
-        Mockito.when(eventInfoDao.findById(eventUUID)).thenReturn(Optional.of(eventInfo));
+        when(eventsDao.findById(eventUUID)).thenReturn(Optional.of(event));
+        when(eventInfoDao.findById(eventUUID)).thenReturn(Optional.of(eventInfo));
+
         boolean result = eventServices.modifyEvent(createEventDTO);
+
         assertTrue(result);
+        verify(eventsDao).save(event);
+        verify(eventInfoDao).save(eventInfo);
     }
 
     @Test
     void modifyEvent_eventNotFound() {
-        Mockito.when(eventsDao.findById(eventUUID)).thenReturn(Optional.empty());
-
-        Exception exception = assertThrows(Exception.class, () -> {
-            eventServices.modifyEvent(createEventDTO);
-        });
-        assertEquals("Event not found for UUID: " + createEventDTO.getUuid(), exception.getMessage());
+        when(eventsDao.findById(eventUUID)).thenReturn(Optional.empty());
+        
+        assertFalse(eventServices.modifyEvent(createEventDTO));
     }
 
     @Test
     void deleteEvent_success() {
-        Mockito.when(eventInfoDao.findById(eventUUID)).thenReturn(Optional.of(eventInfo));
-        Mockito.when(eventsDao.findById(eventUUID)).thenReturn(Optional.of(event));
+        when(eventInfoDao.findById(eventUUID)).thenReturn(Optional.of(eventInfo));
+        when(eventsDao.findById(eventUUID)).thenReturn(Optional.of(event));
 
         boolean result = eventServices.deleteEvent(createEventDTO);
+
         assertTrue(result);
-        Mockito.verify(eventInfoDao).deleteById(eventUUID);
-        Mockito.verify(eventsDao).deleteById(eventUUID);
+        verify(eventInfoDao).deleteById(eventUUID);
+        verify(eventsDao).deleteById(eventUUID);
     }
 
     @Test
@@ -100,13 +101,13 @@ class EventServicesTest {
     void addEvent_success() {
         boolean result = eventServices.addEvent(createEventDTO);
         assertTrue(result);
-        Mockito.verify(eventsDao).save(Mockito.any(Events.class));
-        Mockito.verify(eventInfoDao).save(Mockito.any(EventInfo.class));
+        verify(eventsDao).save(any(Events.class));
+        verify(eventInfoDao).save(any(EventInfo.class));
     }
 
     @Test
     void addEvent_invalidEventDetails() {
-        createEventDTO.setEventName(null);  // Invalid scenario
+        createEventDTO.setEventName(null);
         boolean result = eventServices.addEvent(createEventDTO);
         assertFalse(result);
     }
@@ -115,7 +116,7 @@ class EventServicesTest {
     void getAllEvents() {
         List<Events> eventsList = new ArrayList<>();
         eventsList.add(event);
-        Mockito.when(eventsDao.findAll()).thenReturn(eventsList);
+        when(eventsDao.findAll()).thenReturn(eventsList);
 
         List<Events> result = eventServices.getAllEvents();
         assertEquals(1, result.size());

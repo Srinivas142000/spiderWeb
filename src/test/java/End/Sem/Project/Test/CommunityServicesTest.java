@@ -47,25 +47,29 @@ class CommunityServicesTest {
 
     @Test
     void ensureGeneralCommunityExists_whenCommunityExists() {
-        Mockito.when(coDao.findByCommunityNameIgnoreCase("General"))
+        Mockito.when(coDao.findByCommunityNameIgnoreCase("general"))
                 .thenReturn(Optional.of(existingCommunity));
 
         UUID genId = communityServices.ensureGeneralCommunityExists();
 
-        Assertions.assertEquals(genId, existingCommunity.getCommunityId());
-        Mockito.verify(coDao).findByCommunityNameIgnoreCase("General");
-        Mockito.verify(coDao, Mockito.never()).save(Mockito.any());
+        Assertions.assertEquals(existingCommunity.getCommunityId(), genId);
+        Mockito.verify(coDao).findByCommunityNameIgnoreCase("general");
+        Mockito.verify(coDao, Mockito.never()).save(Mockito.any(UserCommunities.class));
     }
 
+
+    // Making sure we create a mock general community when we can't find the real thing
     @Test
     void ensureGeneralCommunityExists_whenCommunityDoesNotExist() {
-        Mockito.when(coDao.findByCommunityNameIgnoreCase("General")).thenReturn(Optional.empty());
+        Mockito.when(coDao.findByCommunityNameIgnoreCase("general"))
+                .thenReturn(Optional.empty());
 
         UUID genId = communityServices.ensureGeneralCommunityExists();
 
         Assertions.assertNotNull(genId);
         Mockito.verify(coDao).save(Mockito.any(UserCommunities.class));
     }
+
 
     @Test
     void getDetails_whenCommunityExists() {

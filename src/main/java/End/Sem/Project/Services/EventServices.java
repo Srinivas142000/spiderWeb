@@ -50,9 +50,16 @@ public class EventServices extends CommonHelpers {
     }
 
     /**
-     * Modifies an existing event based on the provided details.
-     * @param cdto details containing updated event information.
-     * @return true if the modification is successful, else false.
+     * Modifies an existing event based on the provided CreateEventDTO.
+     *
+     * This method retrieves an event using the UUID from the CreateEventDTO,
+     * updates its fields if they are not null, and saves the updated event
+     * back to the database. It also updates related event information.
+     *
+     * @param cdto the data transfer object containing event details to update
+     * @return true if the event was modified successfully, false otherwise
+     * @throws IllegalArgumentException if the UUID in the CreateEventDTO is null
+     * @throws Exception if the event or event info is not found
      */
     public boolean modifyEvent(CreateEventDTO cdto) {
         try {
@@ -74,6 +81,7 @@ public class EventServices extends CommonHelpers {
             updateIfNotNullDate(cdto.getEventEndDate(), eventToUpdate::setEventEndDate);
             updateIfNotNullTime(cdto.getEventStartTime(), eventToUpdate::setEventStartTime);
             updateIfNotNullTime(cdto.getEventEndTime(), eventToUpdate::setEventEndTime);
+
             eventsDao.save(eventToUpdate);
             System.out.println("Modified Event: " + eventToUpdate);
 

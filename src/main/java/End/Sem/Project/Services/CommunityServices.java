@@ -52,14 +52,14 @@ public class CommunityServices {
         }
 
         UserCommunities generalCommunity = new UserCommunities();
-        generalCommunity.setCommunityId(UUID.randomUUID());
+        UUID newUuid = UUID.randomUUID();
+        generalCommunity.setCommunityId(newUuid);
         generalCommunity.setCommunityName("General");
         generalCommunity.setCommunityDescription("Default community for all users");
         generalCommunity.setUserMaxCount(100);
         generalCommunity.setUserCurrCount(0);
-
-        generalCommunity = coDao.save(generalCommunity);
-        return generalCommunity.getCommunityId();
+        coDao.save(generalCommunity);
+        return newUuid;
     }
 
     /**
@@ -74,11 +74,13 @@ public class CommunityServices {
 
             if (temp.isPresent()) {
                 UserCommunities community = temp.get();
-                List<String> usersList = community.getUsers().stream()
-                        .map(user -> user.getFirstName() + " " + user.getLastName())
-                        .collect(Collectors.toList());
-                community.setUsers(null);
-                community.setUsersList(usersList);
+                if (community.getUsers() != null) {
+                    List<String> usersList = community.getUsers().stream()
+                            .map(user -> user.getFirstName() + " " + user.getLastName())
+                            .collect(Collectors.toList());
+                    community.setUsers(null);
+                    community.setUsersList(usersList);
+                }
             }
 
             return temp;
