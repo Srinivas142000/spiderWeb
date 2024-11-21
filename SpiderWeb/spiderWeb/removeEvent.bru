@@ -1,0 +1,18 @@
+meta {
+  name: removeEvent
+  type: http
+  seq: 5
+}
+
+delete {
+  url: http://localhost:8080/event/removeEvent
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+          "uuid": "b7a1f84d-b0eb-43a0-9654-5d7f5e4b118f",
+          "eventName": "Quarterly Review"
+      }
+}

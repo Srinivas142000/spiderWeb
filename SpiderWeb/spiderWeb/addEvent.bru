@@ -1,0 +1,26 @@
+meta {
+  name: addEvent
+  type: http
+  seq: 3
+}
+
+post {
+  url: http://localhost:8080/event/
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+          "eventLocation": "Grand Ballroom, City Hotel",
+          "eventName": "Future of AI Summit 2024",
+          "eventRegistration": true,
+          "eventStartDate": "2024-07-10",
+          "eventEndDate": "2024-07-10",
+          "eventStartTime": "08:30:00",
+          "eventEndTime": "16:30:00",
+          "eventAvailability": 200,
+          "eventDescription": "An engaging summit focusing on advancements in artificial intelligence and machine learning.",
+          "boardPosition": "400,300"
+      }
+}

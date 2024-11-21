@@ -1,0 +1,19 @@
+meta {
+  name: modifyEvent
+  type: http
+  seq: 4
+}
+
+patch {
+  url: http://localhost:8080/event/modifyEvent
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+          "uuid": "a5b7c123-7d0e-42a4-b09c-55c947f8e1e1",
+          "eventAvailability": 250,
+          "eventDescription": "An overly engaging summit focusing on advancements in artificial intelligence and machine learning."
+      }
+}

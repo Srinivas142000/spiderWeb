@@ -1,0 +1,18 @@
+meta {
+  name: login
+  type: http
+  seq: 6
+}
+
+get {
+  url: http://localhost:8080/login/validate
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "userName": "alex.johnson",
+    "password": "A1exJ0hn$on2023!"
+  }
+}
