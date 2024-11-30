@@ -113,13 +113,13 @@ public class CommunityServices {
      */
     public List<UserCommunities> allCommunities() {
         List<UserCommunities> uc = commDao.findAll();
-        for (UserCommunities community : uc) {
-            if (community.getUsers() != null) {
-                List<String> usersList = community.getUsers().stream()
-                        .map(user -> user.getFirstName() + " " + user.getLastName())
-                        .collect(Collectors.toList());
-            }
-        }
+//        for (UserCommunities community : uc) {
+//            if (community.getUsers() != null) {
+//                List<String> usersList = community.getUsers().stream()
+//                        .map(user -> user.getFirstName() + " " + user.getLastName())
+//                        .collect(Collectors.toList());
+//            }
+//        }
         return uc;
     }
 }
