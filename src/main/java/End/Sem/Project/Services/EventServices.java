@@ -41,11 +41,29 @@ public class EventServices extends CommonHelpers {
      * Trying to return it as a JSON Object to see if React would like a JSON structure or not
      * Fetches the details of a specific event by its name.
      *
-     * @param name the name of the event to fetch.
+     * @param eventId the eventId of the event to fetch.
      * @return a JSONObject containing the event details.
      */
-    public JSONObject getSpecificEvent(String name) {
+    public JSONObject getSpecificEvent(UUID eventId) {
         JSONObject rJSON = new JSONObject();
+        Optional<Events> eventOpt = eventsDao.findById(eventId);
+        Optional<EventInfo> eventInfoOpt = eventInfoDao.findById(eventId);
+        if (eventOpt.isPresent()) {
+            Events event = eventOpt.get();
+            EventInfo ei = eventInfoOpt.get();
+            rJSON.put("eventNum", event.getEventNum().toString());
+            rJSON.put("eventName", event.getEventName());
+            rJSON.put("eventStartDate", event.getEventStartDate().toString());
+            rJSON.put("eventEndDate", event.getEventEndDate().toString());
+            rJSON.put("eventLocation", event.getEventLocation());
+            rJSON.put("eventStartTime", event.getEventStartTime().toString());
+            rJSON.put("eventEndTime", event.getEventEndTime().toString());
+            rJSON.put("eventRegistration", event.isEventRegistration());
+            rJSON.put("eventDescription", ei.getEventDescription());
+            rJSON.put("eventAvailability", ei.getEventAvailability());
+        } else {
+            rJSON.put("error", "Event not found");
+        }
         return rJSON;
     }
 

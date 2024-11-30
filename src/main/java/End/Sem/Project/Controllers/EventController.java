@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.json.*;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Controller for handling event-related requests.
@@ -21,12 +22,12 @@ public class   EventController {
 
     /**
      * Fetches information about a specific event.
-     * @param eventName the name of the event to retrieve
+     * @param eventId the name of the event to retrieve
      * @return a JSONObject containing event details
      */
-    @GetMapping("/{eventName}")
-    public JSONObject getEventInfo(@PathVariable String eventName) {
-        return eventServices.getSpecificEvent(eventName);
+    @GetMapping("/{eventId}")
+    public JSONObject getEventInfo(@PathVariable UUID eventId) {
+        return eventServices.getSpecificEvent(eventId);
     }
 
     /**
