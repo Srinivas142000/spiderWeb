@@ -20,7 +20,7 @@ public class SpiderWebApplication {
 			@Override
 			public void addCorsMappings(CorsRegistry registry) {
 				registry.addMapping("/**")  // Apply this to all endpoints
-						.allowedOrigins("http://localhost:3000")  // Allow React app's domain during development
+						.allowedOrigins("http://localhost:3000", "https://jolly-salamander-9c59e3.netlify.app")  // Allow React app's domain during development
 						.allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")  // Allowed HTTP methods
 						.allowedHeaders("*")  // Allow all headers
 						.allowCredentials(true);  // Allow credentials like cookies or authorization headers
